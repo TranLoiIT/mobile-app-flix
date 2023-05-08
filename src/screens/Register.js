@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { ViewContainer } from "../components/ViewContainer"
 import { TEXT } from "../constants/message";
 import { COLORS } from "../constants/colors";
@@ -52,60 +52,77 @@ const RegisterScreen = () => {
     }
 
     return (
-        <ViewContainer>
-            <Text style={styles.title}>{TEXT.REGISTER}</Text>
-            <View style={{marginBottom: 12}}>
-                <AppInputText
-                    value={formData.userName}
-                    lable={TEXT.FORM_RS.NAME}
-                    colorLable="white"
-                    onChange={value => setFormData({...formData, userName: value})}
-                    bgColorInput={'rgb(229 231 235)'}
-                    colorText={COLORS.black}
-                />
-            </View>
-            <View style={{marginBottom: 12}}>
-                <AppInputText
-                    value={formData.userEmail}
-                    lable={TEXT.FORM_RS.EMAIL}
-                    colorLable="white"
-                    onChange={value => setFormData({...formData, userEmail: value})}
-                    bgColorInput={'rgb(229 231 235)'}
-                    colorText={COLORS.black}
-                    maxLength={24}
-                />
-            </View>
-            <View style={{marginBottom: 12}}>
-                <AppInputText
-                    value={formData.userPassword}
-                    lable={TEXT.FORM_RS.PASSWORD}
-                    colorLable="white"
-                    onChange={value => setFormData({...formData, userPassword: value})}
-                    bgColorInput={'rgb(229 231 235)'}
-                    colorText={COLORS.black}
-                    maxLength={24}
-                    secureTextEntry={true}
-                />
-            </View>
-            <View style={{marginBottom: 12}}>
-                <AppInputText
-                    value={formData.confirmPassword}
-                    lable={TEXT.FORM_RS.COMFIRMPW}
-                    colorLable="white"
-                    onChange={value => setFormData({...formData, confirmPassword: value})}
-                    bgColorInput={'rgb(229 231 235)'}
-                    colorText={COLORS.black}
-                    maxLength={24}
-                    secureTextEntry={true}
-                />
-            </View>
-            <View style={{marginTop: 20}}>
-                <AppButton
-                    label={TEXT.REGISTER}
-                    onPress={() => hanldeRegister()}
-                />
-            </View>
-        </ViewContainer>
+        <>
+            <ViewContainer style={{paddingLeft: 20, paddingRight: 20}}>
+                <Text style={styles.title}>{TEXT.REGISTER}</Text>
+                <View style={{marginBottom: 12}}>
+                    <AppInputText
+                        value={formData.userName}
+                        lable={TEXT.FORM_RS.NAME}
+                        colorLable="white"
+                        onChange={value => setFormData({...formData, userName: value})}
+                        bgColorInput={'rgb(229 231 235)'}
+                        colorText={COLORS.black}
+                    />
+                </View>
+                <View style={{marginBottom: 12}}>
+                    <AppInputText
+                        value={formData.userEmail}
+                        lable={TEXT.FORM_RS.EMAIL}
+                        colorLable="white"
+                        onChange={value => setFormData({...formData, userEmail: value})}
+                        bgColorInput={'rgb(229 231 235)'}
+                        colorText={COLORS.black}
+                        maxLength={24}
+                    />
+                </View>
+                <View style={{marginBottom: 12}}>
+                    <AppInputText
+                        value={formData.userPassword}
+                        lable={TEXT.FORM_RS.PASSWORD}
+                        colorLable="white"
+                        onChange={value => setFormData({...formData, userPassword: value})}
+                        bgColorInput={'rgb(229 231 235)'}
+                        colorText={COLORS.black}
+                        maxLength={24}
+                        secureTextEntry={true}
+                    />
+                </View>
+                <View style={{marginBottom: 12}}>
+                    <AppInputText
+                        value={formData.confirmPassword}
+                        lable={TEXT.FORM_RS.COMFIRMPW}
+                        colorLable="white"
+                        onChange={value => setFormData({...formData, confirmPassword: value})}
+                        bgColorInput={'rgb(229 231 235)'}
+                        colorText={COLORS.black}
+                        maxLength={24}
+                        secureTextEntry={true}
+                    />
+                </View>
+                <View style={{marginTop: 20}}>
+                    <AppButton
+                        label={TEXT.REGISTER}
+                        onPress={() => hanldeRegister()}
+                    />
+                </View>
+                <View style={{marginTop: 20}}>
+                    <AppButton
+                        label={TEXT.BACK}
+                        colors={[COLORS.gradient2, COLORS.gradient2, COLORS.gradient1]}
+                        onPress={() => navigation.goBack()}
+                    />
+                </View>
+                {/* <Pressable
+                    onPress={() => {
+                        // navigation.navigate()
+                    }}
+                    style={{marginTop: 42}}
+                >
+                    <Text style={[styles.back]}>{TEXT.BACK}</Text>
+                </Pressable> */}
+            </ViewContainer>
+        </>
     )
 };
 
@@ -123,5 +140,10 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
         fontWeight: 500,
-    }
+    },
+    back: {
+        color: "red",
+        fontSize: 16,
+        fontWeight: 600,
+    },
 });

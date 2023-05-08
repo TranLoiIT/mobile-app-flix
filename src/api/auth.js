@@ -1,7 +1,9 @@
 import {apiClient} from './config';
 
 export const loginUser = async (payload) => {
+  console.log(payload);
   const res = await apiClient.post('user/auth', payload);
+  console.log(res);
   return res;
 };
 

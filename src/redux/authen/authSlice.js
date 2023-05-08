@@ -3,12 +3,12 @@ import {createSlice} from '@reduxjs/toolkit';
 export const AUTH = 'auth';
 
 export const initialAuth = {
-  userEmail: "",
-  userName: "",
-  token: "",
-  imageUser: "",
+  userEmail: '',
+  userName: '',
+  token: '',
+  imageUser: '',
   history: [],
-  _id: "",
+  _id: '',
 };
 
 const loginSlice = createSlice({
@@ -23,22 +23,22 @@ const loginSlice = createSlice({
     },
     loginError(_state, action) {
       return {
-        userEmail: "",
-        userName: "",
-        token: "",
-        imageUser: "",
+        userEmail: '',
+        userName: '',
+        token: '',
+        imageUser: '',
         history: [],
-        _id: "",
+        _id: '',
       };
     },
     logoutSuccess(_state, action) {
       return {
-        userEmail: "",
-        userName: "",
-        token: "",
-        imageUser: "",
+        userEmail: '',
+        userName: '',
+        token: '',
+        imageUser: '',
         history: [],
-        _id: "",
+        _id: '',
       };
     },
   },

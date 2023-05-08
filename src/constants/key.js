@@ -6,6 +6,7 @@ export const ROUTER = {
     DETAILS: "Details",
     VIDEO: "Video",
     REGISTER: "Register",
+    MAINTAB: "homeMainTab",
 }
 
 export const VALIDATE = {

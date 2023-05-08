@@ -57,6 +57,7 @@ export function ProfileScreen() {
         <Pressable onPress={onPress} style={{marginTop: 42}}>
           <Text style={[styles.register]}>{TEXT.REGISTER}?</Text>
         </Pressable>
+        
       </View>
     </ViewContainer>
   );

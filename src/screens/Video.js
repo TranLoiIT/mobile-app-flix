@@ -15,6 +15,7 @@ export const VideoPlayer = () => {
           width: '100%',
           minHeight: 10,
           maxHeight: 240,
+          backgroundColor: 'black'
         }}
       />
     </ViewContainer>
@@ -22,13 +23,6 @@ export const VideoPlayer = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  video: {
-    width: '100%',
-    height: 240,
-  },
 });
 
 export default VideoPlayer;
