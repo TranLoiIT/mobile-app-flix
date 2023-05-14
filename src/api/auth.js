@@ -14,5 +14,6 @@ export const logoutUser = async () => {
 
 export const registerUser = async (payload) => {
   const res = await apiClient.post('user/register', payload);
+  console.log("HEllo")
   return res;
 };
