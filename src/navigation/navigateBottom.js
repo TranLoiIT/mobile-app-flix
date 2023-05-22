@@ -4,7 +4,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {HomeScreen} from '../screens/Home';
 import {DetailsScreen} from '../screens/Details';
 import { ProfileScreen } from '../screens/Profile';
-import VideoPlayer from '../screens/Video';
+import VideoScreen from '../screens/Video';
 import { IMAGES } from '../constants/image';
 export const COLORS = {
   black: '#000000',
@@ -44,7 +44,7 @@ export function MainBottom() {
       />
       <Tab.Screen
         name="Video"
-        component={VideoPlayer}
+        component={VideoScreen}
         options={{
           tabBarIcon: ({color, size}) => (
             <Image source={IMAGES.FILM} style={[styles.image, { tintColor: color }]} />

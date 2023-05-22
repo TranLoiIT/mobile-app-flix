@@ -1,21 +1,18 @@
-import React from 'react';
-import {StyleSheet, Text, ScrollView} from 'react-native';
+import { View } from 'react-native';
 import { ViewContainer } from '../components/ViewContainer';
 import VideoPlayer from '../components/video-player';
 
-export const VideoScreen = () => {
+const WebViewExample = () => {
 
   return (
-    <ViewContainer>
+    <View style={{backgroundColor: '#00ec43', height: '100%'}}>
       {/* <Text style={{fontSize: 32, color: 'red'}}>Videos Screen</Text> */}
       {/* <ScrollView> */}
         <VideoPlayer />
       {/* </ScrollView> */}
-    </ViewContainer>
-  );
+    </View>
+  )
 };
 
-const styles = StyleSheet.create({
-});
 
-export default VideoScreen;
+export default WebViewExample;
