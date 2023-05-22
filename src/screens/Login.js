@@ -1,6 +1,6 @@
 import {useState, React} from 'react';
 import {Button, Pressable, StyleSheet, Text, View} from 'react-native';
-import {COLORS} from '../constants/colors';
+import {COLORS, grayColor} from '../constants/colors';
 import {AppInputText} from '../components/app-inut-text';
 import {AppButton} from '../components/app-button';
 import {useDispatch} from 'react-redux';
@@ -12,9 +12,10 @@ import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/go
 import { DATA_USER, ROUTER } from '../constants/key';
 import { useNavigation } from '@react-navigation/native';
 import { Loading } from '../components/app-loadding';
-import { showAlert } from '../utils/common';
+import { BACKGROUND_LOGIN, showAlert } from '../utils/common';
 import { TEXT } from '../constants/message';
 import { isEmail, isValidatePW } from '../utils/validate';
+import { ImageBackground } from 'react-native';
 
 export function LoginScreen() {
   const dispatch = useDispatch();
@@ -26,13 +27,13 @@ export function LoginScreen() {
   const [loadding, setLoadding] = useState(false);
 
   const hanldeLogin = async () => {
-    // if (account.userEmail === "" || account.userPassword === "") {
-    //   showAlert(TEXT.ERROR.MSG_001);
-    // } else if (!isEmail(account.userEmail)) {
-    //   showAlert(TEXT.ERROR.MSG_003);
-    // } else if (!isValidatePW(account.userPassword)) {
-    //   showAlert(TEXT.ERROR.MSG_004);
-    // } else {
+    if (account.userEmail === "" || account.userPassword === "") {
+      showAlert(TEXT.ERROR.MSG_001);
+    } else if (!isEmail(account.userEmail)) {
+      showAlert(TEXT.ERROR.MSG_003);
+    } else if (!isValidatePW(account.userPassword)) {
+      showAlert(TEXT.ERROR.MSG_004);
+    } else {
       try {
         setLoadding(true);
         const data = await loginUser(account);
@@ -47,7 +48,7 @@ export function LoginScreen() {
       }finally {
         setLoadding(false);
       }
-    // }
+    }
   };
 
   const loginGG = async () => {
@@ -72,74 +73,82 @@ export function LoginScreen() {
 
   return (
     <View style={styles.containner}>
-      <Text style={styles.title}>Login</Text>
-      <View style={styles.formLogin}>
-        <View style={{marginBottom: 24}}>
-          <AppInputText
-            value={account.userEmail}
-            lable="Email"
-            onChange={value => setAccount({...account, userEmail: value})}
-            bgColorInput={'rgb(229 231 235)'}
-            colorText={COLORS.black}
-          />
-        </View>
-        <View style={{marginBottom: 20}}>
-          <AppInputText
-            value={account.userPassword}
-            lable="Password"
-            onChange={value => setAccount({...account, userPassword: value})}
-            bgColorInput={'rgb(229 231 235)'}
-            colorText={COLORS.black}
-            maxLength={24}
-            secureTextEntry={true}
-          />
-        </View>
-        <View style={{marginTop: 12}}>
-          <Pressable
-            onPress={() => {navigation.navigate(ROUTER.REGISTER)}}
-            style={{marginBottom: 24, color: 'red'}}
-          >
-            <Text style={[styles.register]}>{TEXT.REGISTER}?</Text>
-          </Pressable>
+      <ImageBackground source={{uri: BACKGROUND_LOGIN}} resizeMode="cover" style={styles.backgroundImage}>
+        <View style={styles.formLogin}>
+          <Text style={styles.title}>Đăng nhập</Text>
+          <View style={{marginBottom: 24}}>
+            <AppInputText
+              value={account.userEmail}
+              lable="Email"
+              colorLable={'white'}
+              onChange={value => setAccount({...account, userEmail: value})}
+              bgColorInput={grayColor(1)}
+              colorText={COLORS.white}
+            />
+          </View>
+          <View style={{marginBottom: 20}}>
+            <AppInputText
+              value={account.userPassword}
+              lable="Password"
+              colorLable={'white'}
+              onChange={value => setAccount({...account, userPassword: value})}
+              bgColorInput={grayColor(1)}
+              colorText={COLORS.white}
+              maxLength={24}
+              secureTextEntry={true}
+            />
+          </View>
+          <View style={{marginTop: 12}}>
+            <Pressable
+              onPress={() => {navigation.navigate(ROUTER.REGISTER)}}
+              style={{marginBottom: 24, color: 'red'}}
+            >
+              <Text style={[styles.register]}>{TEXT.REGISTER}?</Text>
+            </Pressable>
 
-          <AppButton label="Login" onPress={() => hanldeLogin()} />
+            <AppButton label="Login" onPress={() => hanldeLogin()} />
 
-          <GoogleSigninButton
-            style={[styles.BtnLoginGG]}
-            size={GoogleSigninButton.Size.Wide}
-            color={GoogleSigninButton.Color.Light}
-            onPress={loginGG}
-            disabled={false}
-          />
+            {/* <GoogleSigninButton
+              style={[styles.BtnLoginGG]}
+              size={GoogleSigninButton.Size.Wide}
+              color={GoogleSigninButton.Color.Light}
+              onPress={loginGG}
+              disabled={false}
+            /> */}
+          </View>
         </View>
-      </View>
-      { loadding && <Loading /> }
+        { loadding && <Loading /> }
+      </ImageBackground>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   containner: {
-    backgroundColor: COLORS.backgroundThemeDark,
+    // backgroundColor: COLORS.backgroundThemeDark,
     width: '100%',
     height: '100%',
+  },
+  backgroundImage: {
+    flex: 1,
+    justifyContent: 'center',
   },
   title: {
     fontSize: 32,
     color: COLORS.white,
     textAlign: 'center',
-    marginTop: 120,
     marginBottom: 32,
+    fontWeight: '700',
   },
   formLogin: {
     paddingTop: 24,
     paddingBottom: 24,
-    paddingLeft: 20,
-    paddingRight: 20,
-    marginLeft: 32,
-    marginRight: 32,
+    paddingLeft: 28,
+    paddingRight: 28,
+    marginLeft: 24,
+    marginRight: 24,
     borderRadius: 12,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.black,
   },
   BtnLoginGG: {
     width: "100%",

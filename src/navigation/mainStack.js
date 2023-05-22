@@ -10,12 +10,15 @@ import {DATA_USER} from '../constants/key';
 import {useEffect} from 'react';
 import {loginApp} from '../redux/authen/authSlice';
 import RegisterScreen from '../screens/Register';
+import WebViewExample from '../screens/Test';
+import Orientation from 'react-native-orientation-locker';
 const Stack = createNativeStackNavigator();
 
 function mainStack() {
   const auth = useSelector(state => state.auth);
   const dispatch = useDispatch();
   useEffect(() => {
+    // Orientation.unlockAllOrientations();
     const getDataUser = async () => {
       const dataUser = await AsyncStorage.getItem(DATA_USER);
       if (dataUser) {
@@ -54,6 +57,7 @@ function mainStack() {
           </>
         )}
         <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="Test" component={WebViewExample} />
       </Stack.Navigator>
     </NavigationContainer>
   );

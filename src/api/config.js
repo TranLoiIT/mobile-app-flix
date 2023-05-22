@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // import {BASE_URL} from 'react-native-dotenv';
 // get the port of the computer
-const PORT = '192.168.3.174'
+const PORT = '192.168.2.108'
 const BASE_URL = `http://${PORT}:9000/api/`;
 
 console.log(BASE_URL);

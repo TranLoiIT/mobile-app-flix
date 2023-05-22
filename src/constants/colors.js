@@ -36,6 +36,10 @@ export const blackColor = opa => {
   return `rgba(0, 0, 0, ${opa})`;
 };
 
+export const grayColor = opa => {
+  return `rgba(107, 114, 128, ${opa})`;
+};
+
 export const whiteColor = opa => {
   return `rgba(255, 255, 255, ${opa})`;
 };
