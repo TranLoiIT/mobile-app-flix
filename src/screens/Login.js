@@ -1,9 +1,9 @@
-import {useState, React} from 'react';
+import {useState, React, useEffect} from 'react';
 import {Button, Pressable, StyleSheet, Text, View} from 'react-native';
 import {COLORS, grayColor} from '../constants/colors';
 import {AppInputText} from '../components/app-inut-text';
 import {AppButton} from '../components/app-button';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { loginApp, loginError } from '../redux/authen/authSlice';
 import {loginUser } from '../api/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,11 +20,35 @@ import { ImageBackground } from 'react-native';
 export function LoginScreen() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const [loadding, setLoadding] = useState(false);
   const [account, setAccount] = useState({
     userEmail: 'loitest@gmail.com',
     userPassword: 'Aa12345',
   });
-  const [loadding, setLoadding] = useState(false);
+
+  const getDataUser = async () => {
+    try {
+      setLoadding(true);
+      const dataUser = await AsyncStorage.getItem(DATA_USER);
+      if (dataUser) {
+        console.log('has token');
+        const data = JSON.parse(dataUser);
+        console.log('data', data)
+        if (data?.token !== '') {
+          dispatch(loginApp(data));
+          // navigation.navigate(ROUTER.MAINTAB);
+        }
+      }
+    } catch (error) {
+      console.log('error', error)
+    } finally {
+      setLoadding(false);
+    }
+  };
+
+  useEffect(() => {
+    getDataUser();
+  }, []);
 
   const hanldeLogin = async () => {
     if (account.userEmail === "" || account.userPassword === "") {
@@ -51,25 +75,25 @@ export function LoginScreen() {
     }
   };
 
-  const loginGG = async () => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo);
-      // this.setState({ userInfo });
-    } catch (error) {
-      console.log(error?.code);
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // user cancelled the login flow
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        // operation (e.g. sign in) is in progress already
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // play services not available or outdated
-      } else {
-        // some other error happened
-      }
-    }
-  };
+  // const loginGG = async () => {
+  //   try {
+  //     await GoogleSignin.hasPlayServices();
+  //     const userInfo = await GoogleSignin.signIn();
+  //     console.log(userInfo);
+  //     // this.setState({ userInfo });
+  //   } catch (error) {
+  //     console.log(error?.code);
+  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  //       // user cancelled the login flow
+  //     } else if (error.code === statusCodes.IN_PROGRESS) {
+  //       // operation (e.g. sign in) is in progress already
+  //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+  //       // play services not available or outdated
+  //     } else {
+  //       // some other error happened
+  //     }
+  //   }
+  // };
 
   return (
     <View style={styles.containner}>
