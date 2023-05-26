@@ -1,16 +1,18 @@
 import React from 'react';
 import {Image, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {HomeScreen} from '../screens/Home';
 import {DetailsScreen} from '../screens/Details';
 import { ProfileScreen } from '../screens/Profile';
-import VideoScreen from '../screens/Video';
+import MovieDatails from '../screens/MovieDatailScreen';
 import { IMAGES } from '../constants/image';
+import { HomeScreen } from '../screens/HomeScreen';
 export const COLORS = {
   black: '#000000',
-  inactive: '#A7A7CC',
-  active: '#7878FA',
+  inactive: 'white',
+  active: 'red',
 };
+
+import Feather from 'react-native-vector-icons/Feather';
 
 const Tab = createBottomTabNavigator();
 
@@ -29,6 +31,7 @@ export function MainBottom() {
         component={HomeScreen}
         options={{
           tabBarIcon: ({color, size}) => (
+            // <Feather name="home" size={24} style={{color: 'white'}}  />
             <Image source={IMAGES.HOME} style={[styles.image, { tintColor: color }]} />
           ),
         }}
@@ -42,15 +45,15 @@ export function MainBottom() {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Video"
-        component={VideoScreen}
+        component={MovieDatails}
         options={{
           tabBarIcon: ({color, size}) => (
             <Image source={IMAGES.FILM} style={[styles.image, { tintColor: color }]} />
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
@@ -70,8 +73,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
   },
   image: {
-    width: 24,
-    height: 24
+    width: 25,
+    height: 25,
   },
 });
 
