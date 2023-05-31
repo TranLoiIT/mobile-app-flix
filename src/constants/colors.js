@@ -7,6 +7,7 @@ export const COLORS = {
   borderInput: '#3C3C5B',
   labelInput: '#F2F2FA',
   backgroundInput: '#232336',
+  backgroundInput2: '#374259',
   placeholderInput: '#40404D',
   textWhite: '#E4E4F0',
   bg1: '#1F1F1F',
@@ -30,6 +31,7 @@ export const COLORS = {
   bg_loading: '#1F1F1F',
   danger: '#D05A5A',
   backgroundThemeDark: '#2B2B2B',
+
 };
 
 export const blackColor = opa => {
