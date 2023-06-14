@@ -1,16 +1,18 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DATA_USER } from '../constants/key';
 
 // import {BASE_URL} from 'react-native-dotenv';
 // get the port of the computer
-const PORT = '192.168.2.108'
+const PORT = '192.168.3.222'
 const BASE_URL = `http://${PORT}:9000/api/`;
+export const URL_IMAGE = `http://${PORT}:9000/`;
 
 console.log(BASE_URL);
 
 export const request = axios.create({
   baseURL: BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
     Accept: 'application/json',
   },
   withCredentials: true,
@@ -20,9 +22,16 @@ export const request = axios.create({
 // Add a request interceptor
 request.interceptors.request.use(
   async config => {
-    // const access_token = await getItem(CONSTANTS.ACCESS_TOKEN);
-    // if (access_token)
-    //   config.headers['Authorization'] = `Bearer ${access_token}`;
+    const dataUser = await AsyncStorage.getItem(DATA_USER);
+    if (dataUser) {
+      const data = JSON.parse(dataUser);
+      // console.log('data', data);
+      if (data?.token !== '') {
+        config.headers['Authorization'] = `Bearer ${data.token}`;
+      }
+    }
+    config.headers['Content-Type'] = 'application/json'
+
     return config;
   },
   error => {
@@ -33,6 +42,7 @@ request.interceptors.request.use(
 // Add a response interceptor
 request.interceptors.response.use(
   response => {
+    console.log('response', response)
     return response;
   },
   async function (error) {

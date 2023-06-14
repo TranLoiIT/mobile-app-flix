@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Video from "react-native-video";
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Orientation from "react-native-orientation-locker";
 import Slider from "@react-native-community/slider";
 import { COLORS } from "../../constants/colors";
+import { URL_IMAGE } from "../../api/config";
 
 const URL_VIDEO = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
 const URL_Y = 'https://www.youtube.com/embed/Q_2gwtUG9ZU'
@@ -16,9 +17,10 @@ const width = Dimensions.get('window').height;
 const height = Dimensions.get('window').width;
 
 
-const VideoPlayer = () => {
+const VideoPlayer = ({uri = URL_VIDEO, poster = ''}) => {
   const videoRef = React.createRef();
   const [orientation, setOrientation] = useState('portrait');
+  const [isShowPoster, setIsShowPoster] = useState(true);
   
   useEffect(() => {
     const lockOrientation = () => {
@@ -33,6 +35,7 @@ const VideoPlayer = () => {
 
     return () => {
       Orientation.unlockAllOrientations();
+      setIsShowPoster(true);
     };
   }, [orientation]);
   
@@ -53,10 +56,11 @@ const VideoPlayer = () => {
   }
 
   const handlePlay = () => {
-    setPlay(true)
-  }
+    setPlay(true);
+  };
 
   const handlePause = () => {
+    setIsShowPoster(false);
     if (play) {
       setPlay(false);
       return;
@@ -109,7 +113,7 @@ const VideoPlayer = () => {
             <View style={fullScreen ? styles.fullscreenVideo : styles.video}>
               <Video
                 ref={videoRef}
-                source={{uri: URL_VIDEO}}
+                source={{uri: uri}}
                 muted={true}
                 controls={false}
                 style={[fullScreen ? styles.fullscreenVideo : styles.video, {flex: 1}]}
@@ -120,6 +124,10 @@ const VideoPlayer = () => {
                 fullscreen
                 resizeMode="contain"
               />
+              { isShowPoster && <Image
+                style={{resizeMode: 'contain', width: '100%', height: "100%"}}
+                source={{ uri: `${URL_IMAGE}${poster}` }} />
+              }
             </View>
 
             {isShowControl && <View style={styles.controlOverlay}>

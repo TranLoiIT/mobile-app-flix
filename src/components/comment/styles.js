@@ -36,7 +36,6 @@ const styles = StyleSheet.create({
         color: COLORS.white,
     },
     btnSendComment: {
-        backgroundColor: COLORS.red,
         borderRadius: 5,
         padding: 8,
         width: 60,
