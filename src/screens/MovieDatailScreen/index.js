@@ -8,13 +8,16 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { COMMENT, SIMILAR_CONTENT, NUMBER_OF_SEASONS, TRAILER } from '../../constants/key';
-import { Loading } from '../../components/app-loadding';
-
+import { COMMENT, SIMILAR_CONTENT, NUMBER_OF_SEASONS, ROUTER } from '../../constants/key';
 import {ActionMenu} from '../../components/action-menu'
-import { RatingStar } from '../../components/rating-star';
-import { AppInputText } from '../../components/app-inut-text';
 import { Comment } from '../../components/comment';
+import VideoPlayer from '../../components/video-player';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { getDetailFilm, reviewsFilm } from '../../api/films';
+import { Loading } from '../../components/app-loadding';
+import { URL_IMAGE } from '../../api/config';
+import uuid from 'react-native-uuid';
+import { useSelector } from 'react-redux';
 
 const movie = {
   id: 'movie1',
@@ -252,19 +255,31 @@ const movie = {
 
 
 const MovieDatails = () => {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const currentMovie = route.params.data;
+  // console.log('currentMovie', currentMovie)
+  const auth = useSelector(state => state.auth);
+  // console.log('auth', auth)
+
   const [active, setActive] = useState(null);
   const [itemAcitve, setItemActive] = useState({});
   const [menu, setMenu] = useState([]);
   const [loading, setLoadding] = useState(false);
+  const [dataDetails, setDataDetails] = useState({});
+  const [listRelated, setListRelated] = useState([]);
+
+
+
   
-  const video = movie.seasons.episodes.items[0];
+  // const video = movie.seasons.episodes.items[0];
 
   useEffect(() => {
     setLoadding(true);
 
     // list menu
     const newMenu = [
-      (movie?.numberOfSeasons > 0 && NUMBER_OF_SEASONS),
+      // (movie?.numberOfSeasons > 0 && NUMBER_OF_SEASONS),
       (movie?.similarMovies.length > 0 && SIMILAR_CONTENT),
       COMMENT
     ].filter(item => item?.key);
@@ -282,75 +297,93 @@ const MovieDatails = () => {
     
   }, []);
 
+  useEffect(() => {
+    // get data details
+    const getDataFilm = async (slug) => {
+      setLoadding(true);
+      try {
+        const data = await getDetailFilm(slug);
+        console.log('data', data.related);
+        setDataDetails(data?.film);
+        setListRelated(data?.related);
+      } catch (error) {
+        console.log('error', error)
+      } finally {
+        setLoadding(false);
+      }
+    }
+
+    if (currentMovie?.slug) {
+      getDataFilm(currentMovie.slug)
+    }
+  }, [currentMovie]);
+
+  console.log('dataDetails', dataDetails);
+  console.log('related', listRelated);
+
   const hanleActive = (data) => {
     const idx = menu.findIndex((item) => item.key === data.key);
     setActive(idx);
     setItemActive(menu[idx]);
   };
 
+  const handleSendComment = async (commet) => {
+    setLoadding(true)
+    try {
+      const slug = dataDetails?.slug || '';
+      const currentReviews = dataDetails?.reviews || '';
+      // console.log('reviews', currentReviews);
+      // console.log('slug', slug);
+      const id = uuid.v4();
+      // console.log('id', id);
+
+      const  newReviews = {
+        _id: id,
+        user: {
+          _id: auth._id,
+          imageUser: auth?.imageUser,
+          userName: auth?.userName,
+          userEmail: auth?.userEmail,
+        },
+        ...commet,
+      };
+      // console.log('newReviews', newReviews)
+
+      const data = await reviewsFilm(slug, {reviews: [newReviews, ...currentReviews]});
+      // console.log('data', data);
+      setDataDetails({
+        ...dataDetails,
+        reviews: data.reviews
+      });
+
+    } catch (error) {
+      console.log('error', error)
+    } finally {
+      setLoadding(false);
+    }
+  }
+
+  const handleSelectMovie = (data) => {
+    // console.log('data', data)
+    navigation.navigate(ROUTER.MOVIE_DETAIL, { data });
+  }
+
   return (
     <ViewContainer>
-      {/* <Text style={{fontSize: 32, color: 'red'}}>Details Screen 123123</Text> */}
-      <Image style={styles.image} source={{ uri: video.poster }} />
+      <VideoPlayer poster={currentMovie.bannerFilm} />
 
       {/* list film */}
       <ScrollView style={{marginBottom: 24}}>
         <View style={{padding: 12}}>
-          <Text style={[styles.title, {color: COLORS.white}]}>{movie.title}</Text>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={styles.match}>{movie?.match ? `khớp ${movie.match}%`: ''}</Text>
-            <Text style={styles.year}>{movie.year}</Text>
-
-            <View style={styles.ageContainer}>
-              <Text style={styles.age}>{`${movie.age}+`}</Text>
-            </View>
-            <Text style={styles.year}>{movie?.numberOfSeasons ? `${movie.numberOfSeasons} tập` : movie.numberOfSeasons}</Text>
-            <Icon name="hd" size={24} color="white" />
-
-          </View>
-          <BtnDetails
-            onClickBtn={() => console.log('Btn play')}
-            style={styles.playButton}
-            renderView={() => (
-              <Text style={styles.playButtonText}>
-                <Entypo name='controller-play' size={16} color="black" style={{paddingRight: 5}} />
-                {' '}
-                Phát
-              </Text>
-            )}
-          />
-
-          <BtnDetails
-            onClickBtn={() => console.log('Btn download')}
-            style={styles.downloadButton}
-            renderView={() => (
-              <Text style={styles.downloadButtonText}>
-                <AntDesign name='download' size={16} color="white" style={{paddingRight: 5}} />
-                {' '}
-                Tải xuống
-              </Text>
-            )}
-          />
-
-          <Text style={{ marginVertical: 10, color: COLORS.white }}>{movie.plot}</Text>
-          <Text style={styles.year}>Diễn viên: {movie.cast}</Text>
-          <Text style={styles.year}>Đạo diễn: {movie.creator}</Text>
-
-          <View style={{flexDirection: 'row', marginTop: 20,}}>
-              <View style={{alignItems: 'center', marginHorizontal: 20}}>
-                <AntDesign name="plus" size={24} color={'white'} />
-                <Text style={{color: 'darkgrey', marginTop: 5}}>Danh sách</Text>
-              </View>
-
-              <View style={{alignItems: 'center', marginHorizontal: 20}}>
-                <Feather name="thumbs-up" size={24} color="white" />
-                <Text style={{color: 'darkgrey', marginTop: 5}}>Xếp hạng</Text>
-              </View>
-
-              <View style={{alignItems: 'center', marginHorizontal: 20}}>
-                <FontAwesome name="send-o" size={24} color="white" />
-                <Text style={{color: 'darkgrey', marginTop: 5 }}>Chia sẻ</Text>
-              </View>
+          <Text style={[styles.title, {color: COLORS.white}]}>{dataDetails?.title || ""}</Text>
+          <Text style={{ marginVertical: 10, color: COLORS.white }}>{dataDetails?.description || ""}</Text>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={styles.year}>Diễn viên: </Text>
+            {
+              (dataDetails?.actor || []).map((item, idx) =>
+                <Text key={idx} style={styles.year}>{`${item}${dataDetails.actor.length - 1 < idx ? ', ': ''}`}</Text>
+              )
+            }
           </View>
         </View>
 
@@ -359,22 +392,19 @@ const MovieDatails = () => {
         </View>
 
         {
-          (!loading && itemAcitve?.key === NUMBER_OF_SEASONS.key) &&
-            (movie.seasons?.episodes?.items || []).map(
+          itemAcitve?.key === SIMILAR_CONTENT.key &&
+            (listRelated || []).map(
               (item, idx) => <EpisodeItem
                 key={idx}
                 episode={item}
-                onPress={(item) => console.log('EpisodeItem', item)}
+                onPress={(item) => handleSelectMovie(item)}
               />
             )
         }
 
         {
-          itemAcitve?.key === SIMILAR_CONTENT.key && <Text style={{color: 'red'}}>{SIMILAR_CONTENT.name}</Text>
-        }
-
-        {
-          itemAcitve?.key === COMMENT.key && <Comment data={movie?.reviews || []} />
+          itemAcitve?.key === COMMENT.key &&
+            <Comment data={dataDetails?.reviews || []} sendComment={handleSendComment} />
         }
       </ScrollView>
 
@@ -387,39 +417,31 @@ const MovieDatails = () => {
 
 const EpisodeItem = (props) => {
   const { episode, onPress } = props;
-  console.log('episode : ', episode);
 
   return (
     <Pressable style={{ margin: 10 }} onPress={() => onPress(episode)}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', marginBottom: 5,}}>
           <Image
             style={{height: 75, aspectRatio: 16/9, resizeMode: 'cover', borderRadius: 3,}}
-            source={{ uri: episode?.poster || ''}}
+            source={{ uri: `${URL_IMAGE}${episode?.posterFilm}`}}
           />
 
           <View style={{flex: 1, padding: 5, justifyContent: 'center',}}>
               <Text style={{color: 'darkgrey'}}>{episode?.title || ''}</Text>
-              <Text style={{color: 'darkgrey', fontSize: 10}}>{episode?.duration || ''}</Text>
+              <Text style={{color: 'darkgrey', fontSize: 10}}>{episode?.description || ''}</Text>
           </View>
-
-          <AntDesign name="download" size={24} color={'white'} />
       </View>
-
-      <Text style={{color: 'darkgrey'}}>{episode?.plot || ''}</Text>
     </Pressable>
   )
 };
 
 export const BtnDetails = (props) => {
-  const {onClickBtn, style, renderView} = props;
+  const {onClickBtn, style,disabled , renderView = () => {}} = props;
 
   return (
-    <Pressable
-      onPress={onClickBtn}
-      style={style}
-    >
-      {renderView && renderView}
-    </Pressable>
+    <TouchableOpacity disabled={disabled} onPress={onClickBtn} style={style}>
+      {renderView()}
+    </TouchableOpacity>
   );
 };
 

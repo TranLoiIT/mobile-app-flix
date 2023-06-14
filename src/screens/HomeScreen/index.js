@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { ViewContainer } from '../../components/ViewContainer';
 import { Loading } from '../../components/app-loadding';
@@ -8,6 +8,9 @@ import { ListDataCategory } from '../../assets/data/categories';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { BtnDetails } from '../MovieDatailScreen';
 import { ROUTER } from '../../constants/key';
+import { getCategory, getListFilms } from '../../api/category';
+import { URL_IMAGE } from '../../api/config';
+
 const movies = {
   id: 'sadsdasd',
   poster: 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/netflix/movie1.jpg',
@@ -17,28 +20,44 @@ const movies = {
 export function HomeScreen() {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+  const [listCategory, setListCategory] = useState(false);
 
-  const listCategory = ListDataCategory || [];
-  console.log('listCategory', listCategory);
-  console.log('DataTestCategories[0].movies', ListDataCategory[0])
+  // const listCategory = ListDataCategory || [];
+  // console.log('listCategory', listCategory);
+  // console.log('DataTestCategories[0].movies', ListDataCategory[0] || [])
   // const categories = ca
   // console.log(categories, 'categories');
 
   const clickMovie = (data) => {
-    console.log('data-choseMovie', data)
-    navigation.navigate(ROUTER.MOVIE_DETAIL);
+    navigation.navigate(ROUTER.MOVIE_DETAIL, { data });
   }
+
+  useEffect(() => {
+    const getDataCategory = async () => {
+      setLoading(true);
+      try {
+        const data = await getCategory();
+        // console.log('data', data);
+        setListCategory(data)
+      } catch (error) {
+        console.log('error', error)
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    getDataCategory();
+  }, []);
 
   return (
     <ViewContainer>
       <View style={styles.container}>
         <FlatList
-          data={ListDataCategory}
+          data={listCategory}
           renderItem={({item}) => {
             return (
               <RenderPoster
-                listPoster={item.movies}
-                title={item.title}
+                item={item}
                 onPress={clickMovie}
               />
           )}}
@@ -76,23 +95,51 @@ export function HomeScreen() {
 }
 
 const RenderPoster = (props) => {
-  const { listPoster = [], title = '', onPress = () => {} } = props
+  const { item = {}, onPress = () => {} } = props;
+
+  const [listFilm, setListFilm] = useState([]);
+  // console.log('item', item)
+
+  useEffect(() => {
+    const getData = async (payload) => {
+      try {
+        const data = await getListFilms(payload);
+        // console.log('getData-films', data);
+        setListFilm(data);
+      } catch (error) {
+        console.log('error', error)
+      }
+    }
+
+    if (item?.genre) {
+      getData(item?.genre);
+    }
+  }, []);
+
   return (
     <View style={{marginTop: 24}}>
-      <Text style={styles.title}>{title}</Text>
-      <FlatList
-        data={listPoster}
-        renderItem={({item}) => {
-          return (
-            <TouchableOpacity
-              onPress={() => onPress(item)}
-            >
-              <Image style={styles.imageCategory} source={{uri: item.poster}} />
-            </TouchableOpacity>
-          )
-        }}
-        horizontal
-      />
+      <Text style={styles.title}>{item.genre}</Text>
+      <View style={{marginBottom: 24}}>
+        {
+          listFilm.length > 0
+            ? <FlatList
+                data={listFilm}
+                renderItem={({item}) => {
+                  // console.log('item', item)
+                  return (
+                    <TouchableOpacity
+                      style={{marginTop: 4}}
+                      onPress={() => onPress(item)}
+                    >
+                      <Image style={styles.imageCategory} source={{uri: `${URL_IMAGE}${item?.posterFilm}`}} />
+                    </TouchableOpacity>
+                  )
+                }}
+                horizontal
+              />
+            : <Text style={styles.textEmty}>{'<   Trống !!!   >'}</Text>
+        }
+      </View>
     </View>
   )
 }

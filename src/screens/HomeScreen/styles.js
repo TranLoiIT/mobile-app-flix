@@ -61,6 +61,14 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         width: '80%',
     },
+
+    textEmty: {
+        fontSize: 14,
+        fontWeight: '400',
+        color: COLORS.white,
+        textAlign: 'center',
+        marginTop: 4,
+    }
 });
 
 export default styles;

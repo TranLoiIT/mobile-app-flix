@@ -1,6 +1,7 @@
 import React from 'react'
 import StarRating from 'react-native-star-rating'
 import { COLORS } from '../../constants/colors'
+import { Text } from 'react-native'
 
 export const RatingStar = ({
     disabled = false,
@@ -10,7 +11,7 @@ export const RatingStar = ({
     fullStarColor = COLORS.red,
     emptyStarColor = COLORS.grey,
     starStyle = {marginRight: 10},
-    selectedStar = (rating) => {},
+    selectedStar = () => {},
 }) => {
 
     return (
@@ -26,3 +27,13 @@ export const RatingStar = ({
         />
     )
 }
+
+
+// disabled = false,
+//     maxStars = 5,
+//     rating = 0,
+//     starSize = 18,
+//     fullStarColor = COLORS.red,
+//     emptyStarColor = COLORS.grey,
+//     starStyle = {marginRight: 10},
+//     selectedStar,
