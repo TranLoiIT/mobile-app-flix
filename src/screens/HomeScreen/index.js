@@ -2,34 +2,23 @@ import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { ViewContainer } from '../../components/ViewContainer';
 import { Loading } from '../../components/app-loadding';
-import { FlatList, Image, Text, View, Animated, TouchableOpacity } from 'react-native';
+import { FlatList, Image, Text, View, TouchableOpacity } from 'react-native';
 import styles from './styles';
-import { ListDataCategory } from '../../assets/data/categories';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { BtnDetails } from '../MovieDatailScreen';
 import { ROUTER } from '../../constants/key';
 import { getCategory, getListFilms } from '../../api/category';
 import { URL_IMAGE } from '../../api/config';
-
-const movies = {
-  id: 'sadsdasd',
-  poster: 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/netflix/movie1.jpg',
-  title: 'Popular on Netflix',
-}
+import { getFilms } from '../../api/films';
 
 export function HomeScreen() {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const [listCategory, setListCategory] = useState(false);
-
-  // const listCategory = ListDataCategory || [];
-  // console.log('listCategory', listCategory);
-  // console.log('DataTestCategories[0].movies', ListDataCategory[0] || [])
-  // const categories = ca
-  // console.log(categories, 'categories');
+  const [banner, setBanner] = useState({});
 
   const clickMovie = (data) => {
-    navigation.navigate(ROUTER.MOVIE_DETAIL, { data });
+    navigation.navigate(ROUTER.MOVIE_DETAIL, { slug: data });
   }
 
   useEffect(() => {
@@ -37,7 +26,8 @@ export function HomeScreen() {
       setLoading(true);
       try {
         const data = await getCategory();
-        // console.log('data', data);
+        const filmsBanner = await getFilms();
+        setBanner(filmsBanner[0])
         setListCategory(data)
       } catch (error) {
         console.log('error', error)
@@ -63,15 +53,15 @@ export function HomeScreen() {
           )}}
           ListHeaderComponent={() => (
             <TouchableOpacity
-              onPress={() => clickMovie(movies)}
+              onPress={() => clickMovie(banner?.slug)}
             >
               <View style={styles.banner}>
-                {movies && <Image style={styles.imageBanner} source={{ uri: movies.poster}} />}
+                {banner?.poster && <Image style={styles.imageBanner} source={{ uri: `${URL_IMAGE}${banner.poster}`}} />}
                 <View style={styles.iconPlay}>
-                  <Text style={styles.titleBanner}>{movies.title}</Text>
+                  <Text ellipsizeMode='tail' numberOfLines={1} style={styles.titleBanner}>{banner?.title}</Text>
 
                   <BtnDetails
-                    onClickBtn={() => console.log('Btn play')}
+                    onClickBtn={() => clickMovie(banner?.slug)}
                     style={styles.playButton}
                     renderView={() => (
                       <Text style={styles.playButtonText}>
@@ -98,13 +88,11 @@ const RenderPoster = (props) => {
   const { item = {}, onPress = () => {} } = props;
 
   const [listFilm, setListFilm] = useState([]);
-  // console.log('item', item)
 
   useEffect(() => {
     const getData = async (payload) => {
       try {
         const data = await getListFilms(payload);
-        // console.log('getData-films', data);
         setListFilm(data);
       } catch (error) {
         console.log('error', error)
@@ -125,13 +113,13 @@ const RenderPoster = (props) => {
             ? <FlatList
                 data={listFilm}
                 renderItem={({item}) => {
-                  // console.log('item', item)
+                  console.log('item', item)
                   return (
                     <TouchableOpacity
                       style={{marginTop: 4}}
-                      onPress={() => onPress(item)}
+                      onPress={() => onPress(item?.slug)}
                     >
-                      <Image style={styles.imageCategory} source={{uri: `${URL_IMAGE}${item?.posterFilm}`}} />
+                      <Image style={styles.imageCategory} source={{uri: `${URL_IMAGE}${item?.poster}`}} />
                     </TouchableOpacity>
                   )
                 }}

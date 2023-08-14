@@ -27,6 +27,8 @@ const styles = StyleSheet.create({
         color: COLORS.white,
         fontWeight: 'bold',
         marginBottom: 8,
+        width: 220,
+        textAlign: 'center',
     },
     imageBanner: {
         width: Dimensions.get('window').width * 10/12,

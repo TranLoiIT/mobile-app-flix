@@ -5,7 +5,14 @@ export const getDetailFilm = async (payload) => {
     return res;
 }
 
-export const reviewsFilm = async (slug, payload) => {
-    const res = await apiClient.patch(`films/${slug}`, payload);
+export const getFilms = async () => {
+    const res = await apiClient.get(`/films/filter`);
+    return res;
+}
+
+export const reviewsFilm = async (id, payload) => {
+    const res = await apiClient.patch(`films/${id}`, payload, {
+        withCredentials: true,
+      });
     return res;
 }

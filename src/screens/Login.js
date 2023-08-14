@@ -31,9 +31,7 @@ export function LoginScreen() {
       setLoadding(true);
       const dataUser = await AsyncStorage.getItem(DATA_USER);
       if (dataUser) {
-        console.log('has token');
         const data = JSON.parse(dataUser);
-        console.log('data', data)
         if (data?.token !== '') {
           dispatch(loginApp(data));
           // navigation.navigate(ROUTER.MAINTAB);

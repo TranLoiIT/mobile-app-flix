@@ -253,104 +253,44 @@ const movie = {
 ]
 };
 
-
-const MovieDatails = () => {
+const MovieDetails = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const currentMovie = route.params.data;
-  // console.log('currentMovie', currentMovie)
+  const slug = route.params.slug;
   const auth = useSelector(state => state.auth);
-  // console.log('auth', auth)
-
   const [active, setActive] = useState(null);
-  const [itemAcitve, setItemActive] = useState({});
+  const [itemActive, setItemActive] = useState({});
   const [menu, setMenu] = useState([]);
-  const [loading, setLoadding] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [dataDetails, setDataDetails] = useState({});
   const [listRelated, setListRelated] = useState([]);
+  const [currentFilm, setCurrentFilm] = useState({});
 
-
-
-  
-  // const video = movie.seasons.episodes.items[0];
-
-  useEffect(() => {
-    setLoadding(true);
-
-    // list menu
-    const newMenu = [
-      // (movie?.numberOfSeasons > 0 && NUMBER_OF_SEASONS),
-      (movie?.similarMovies.length > 0 && SIMILAR_CONTENT),
-      COMMENT
-    ].filter(item => item?.key);
-
-    try {
-      // call api
-      setMenu(newMenu);
-      setItemActive(newMenu[0]);
-      setActive(0)
-    } catch (error) {
-      console.log('error', error) 
-    } finally {
-      setLoadding(false);
-    }
-    
-  }, []);
-
-  useEffect(() => {
-    // get data details
-    const getDataFilm = async (slug) => {
-      setLoadding(true);
-      try {
-        const data = await getDetailFilm(slug);
-        console.log('data', data.related);
-        setDataDetails(data?.film);
-        setListRelated(data?.related);
-      } catch (error) {
-        console.log('error', error)
-      } finally {
-        setLoadding(false);
-      }
-    }
-
-    if (currentMovie?.slug) {
-      getDataFilm(currentMovie.slug)
-    }
-  }, [currentMovie]);
-
-  console.log('dataDetails', dataDetails);
-  console.log('related', listRelated);
-
-  const hanleActive = (data) => {
+  const handleActive = (data) => {
     const idx = menu.findIndex((item) => item.key === data.key);
     setActive(idx);
     setItemActive(menu[idx]);
   };
 
-  const handleSendComment = async (commet) => {
-    setLoadding(true)
+  const handleSendComment = async (comment) => {
+    setLoading(true)
     try {
-      const slug = dataDetails?.slug || '';
+      const id = dataDetails?._id || '';
+      const newId = uuid.v4();
       const currentReviews = dataDetails?.reviews || '';
-      // console.log('reviews', currentReviews);
-      // console.log('slug', slug);
-      const id = uuid.v4();
-      // console.log('id', id);
 
-      const  newReviews = {
-        _id: id,
+      const newReviews = {
+        _id: newId,
         user: {
           _id: auth._id,
           imageUser: auth?.imageUser,
           userName: auth?.userName,
           userEmail: auth?.userEmail,
         },
-        ...commet,
+        ...comment,
       };
-      // console.log('newReviews', newReviews)
 
-      const data = await reviewsFilm(slug, {reviews: [newReviews, ...currentReviews]});
-      // console.log('data', data);
+      const data = await reviewsFilm(id, {reviews: [newReviews, ...currentReviews]});
       setDataDetails({
         ...dataDetails,
         reviews: data.reviews
@@ -359,18 +299,49 @@ const MovieDatails = () => {
     } catch (error) {
       console.log('error', error)
     } finally {
-      setLoadding(false);
+      setLoading(false);
     }
   }
 
   const handleSelectMovie = (data) => {
-    // console.log('data', data)
     navigation.navigate(ROUTER.MOVIE_DETAIL, { data });
   }
 
+  useEffect(() => {
+    // get data details
+    const getDataFilm = async (id) => {
+      setLoading(true);
+      try {
+        const data = await getDetailFilm(id);
+
+        const newMenu = [
+          (data?.film?.episodes.length > 0 && NUMBER_OF_SEASONS),
+          SIMILAR_CONTENT,
+          COMMENT
+        ].filter(item => item?.key);
+        setMenu(newMenu);
+        setItemActive(newMenu[0]);
+        setActive(0)
+
+        setDataDetails(data?.film);
+        setListRelated(data?.related);
+        setCurrentFilm(data?.film?.episodes[0]);
+      } catch (error) {
+        console.log('error', error)
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (slug) {
+      getDataFilm(slug);
+    }
+  }, []);
+
+
   return (
     <ViewContainer>
-      <VideoPlayer poster={currentMovie.bannerFilm} />
+      <VideoPlayer poster={dataDetails?.poster} uri={currentFilm.video} />
 
       {/* list film */}
       <ScrollView style={{marginBottom: 24}}>
@@ -381,18 +352,31 @@ const MovieDatails = () => {
             <Text style={styles.year}>Diễn viên: </Text>
             {
               (dataDetails?.actor || []).map((item, idx) =>
-                <Text key={idx} style={styles.year}>{`${item}${dataDetails.actor.length - 1 < idx ? ', ': ''}`}</Text>
+                <Text key={idx} style={styles.year}>{`${item}${dataDetails.actor.length - 1 > idx ? ', ': ''}`}</Text>
               )
             }
           </View>
         </View>
 
         <View style={{marginTop: 12}}>
-          <ActionMenu data={menu} indexActive={active} onPress={hanleActive} />
+          <ActionMenu data={menu} indexActive={active} onPress={handleActive} />
         </View>
 
         {
-          itemAcitve?.key === SIMILAR_CONTENT.key &&
+          itemActive?.key === NUMBER_OF_SEASONS.key &&
+            <View style>
+              {
+                (dataDetails?.episodes || []).map((item, idx) => <EpisodeItem
+                  key={idx}
+                  episode={item}
+                  onPress={(item) => handleSelectMovie(item)}
+                />)
+              }
+            </View>
+        }
+
+        {
+          itemActive?.key === SIMILAR_CONTENT.key &&
             (listRelated || []).map(
               (item, idx) => <EpisodeItem
                 key={idx}
@@ -403,7 +387,7 @@ const MovieDatails = () => {
         }
 
         {
-          itemAcitve?.key === COMMENT.key &&
+          itemActive?.key === COMMENT.key &&
             <Comment data={dataDetails?.reviews || []} sendComment={handleSendComment} />
         }
       </ScrollView>
@@ -423,12 +407,17 @@ const EpisodeItem = (props) => {
       <View style={{flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', marginBottom: 5,}}>
           <Image
             style={{height: 75, aspectRatio: 16/9, resizeMode: 'cover', borderRadius: 3,}}
-            source={{ uri: `${URL_IMAGE}${episode?.posterFilm}`}}
+            source={{ uri: `${URL_IMAGE}${episode?.poster}`}}
           />
 
           <View style={{flex: 1, padding: 5, justifyContent: 'center',}}>
-              <Text style={{color: 'darkgrey'}}>{episode?.title || ''}</Text>
-              <Text style={{color: 'darkgrey', fontSize: 10}}>{episode?.description || ''}</Text>
+              <Text numberOfLines={1} style={{color: 'white', fontSize: 16, fontWeight: '500'}}>{episode?.title || ''}</Text>
+              {
+                episode?.episode && <Text style={{color: 'darkgrey', fontSize: 14, marginTop: 4}}>
+                  {episode?.episode ? `Tập: ${episode?.episode}` : ''}
+                </Text>
+              }
+              <Text numberOfLines={2} style={{color: 'darkgrey', fontSize: 14, marginTop: 4}}>{episode?.description || ''}</Text>
           </View>
       </View>
     </Pressable>
@@ -445,4 +434,4 @@ export const BtnDetails = (props) => {
   );
 };
 
-export default MovieDatails;
+export default MovieDetails;

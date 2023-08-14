@@ -32,7 +32,6 @@ export const CustomFontText = ({
   const fontFamily = `NunitoSans-${NunitoSansFont[fontWeight]}${
     fontStyle === 'italic' ? 'Italic' : ''
   }`;
-  // console.log('fontFa', fontFamily);
   return (
     <Text
       numberOfLines={numberOfLines}

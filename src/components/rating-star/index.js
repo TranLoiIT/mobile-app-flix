@@ -18,7 +18,7 @@ export const RatingStar = ({
         <StarRating
             disabled={disabled}
             maxStars={maxStars}
-            rating={rating} // Giá trị mặc định cho đánh giá sao
+            rating={Number(rating)} // Giá trị mặc định cho đánh giá sao
             starSize={starSize}
             fullStarColor={fullStarColor} // Đổi màu của sao khi đánh giá đầy đủ
             emptyStarColor={emptyStarColor} // Đổi màu của sao khi chưa đánh giá

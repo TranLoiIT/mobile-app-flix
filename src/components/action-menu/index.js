@@ -3,7 +3,6 @@ import { FlatList, TouchableOpacity, View } from "react-native";
 import { COLORS } from "../../constants/colors";
 
 export const ActionMenu = ({indexActive = 0, onPress = () => {}, data = []}) => {
-  console.log(234234234234);
   return (
      <FlatList
         style={{ flexGrow: 0 }}

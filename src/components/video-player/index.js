@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Video from "react-native-video";
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import IconIon from 'react-native-vector-icons/Ionicons';
 import Orientation from "react-native-orientation-locker";
 import Slider from "@react-native-community/slider";
 import { COLORS } from "../../constants/colors";
 import { URL_IMAGE } from "../../api/config";
+import { useNavigation } from "@react-navigation/native";
 
 const URL_VIDEO = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
 const URL_Y = 'https://www.youtube.com/embed/Q_2gwtUG9ZU'
@@ -21,6 +23,8 @@ const VideoPlayer = ({uri = URL_VIDEO, poster = ''}) => {
   const videoRef = React.createRef();
   const [orientation, setOrientation] = useState('portrait');
   const [isShowPoster, setIsShowPoster] = useState(true);
+
+  const navigation = useNavigation();
   
   useEffect(() => {
     const lockOrientation = () => {
@@ -106,6 +110,10 @@ const VideoPlayer = ({uri = URL_VIDEO, poster = ''}) => {
     } setIsShowControl(true);
   }
 
+  const handleBack = () => {
+    navigation.goBack()
+  }
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={{backgroundColor: '#000000C4'}} onPress={handleControl}>
@@ -113,7 +121,7 @@ const VideoPlayer = ({uri = URL_VIDEO, poster = ''}) => {
             <View style={fullScreen ? styles.fullscreenVideo : styles.video}>
               <Video
                 ref={videoRef}
-                source={{uri: uri}}
+                source={{uri: `${URL_IMAGE}${uri}`}}
                 muted={true}
                 controls={false}
                 style={[fullScreen ? styles.fullscreenVideo : styles.video, {flex: 1}]}
@@ -138,6 +146,7 @@ const VideoPlayer = ({uri = URL_VIDEO, poster = ''}) => {
                   skipBackwards={skipBackwards}
                   skipForwards={skipForwards}
                   showControl={isShowControl}
+                  back={handleBack}
                 />
 
                 <ProgressBar
@@ -157,32 +166,37 @@ const VideoPlayer = ({uri = URL_VIDEO, poster = ''}) => {
 };
 
 const PlayControls = props => {
-  const {playing, onPlay, onPause, skipForwards, skipBackwards} = props;
+  const {playing, onPlay, onPause, skipForwards, skipBackwards, back} = props;
 
   return (
-    <View style={styles.wrapper}>
-      <TouchableOpacity onPress={skipBackwards}>
-        <Icon name="backward" size={26} color="#FFFFFF" />
+    <>
+      <View style={styles.wrapper}>
+      <TouchableOpacity style={{position: "absolute", top: 16, left: 12}} onPress={back}>
+        <IconIon name="arrow-back" size={26} color="#FFFFFF" />
       </TouchableOpacity>
+        <TouchableOpacity onPress={skipBackwards}>
+          <Icon name="backward" size={26} color="#FFFFFF" />
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={playing ? onPause : onPlay}
-      >
-        {
-          playing ? (
-            <Icon name="play" size={26} color="#FFFFFF" />
-          ) :(
-            <Icon name="pause" size={26} color="#FFFFFF" />
-          )
-        }
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={playing ? onPause : onPlay}
+        >
+          {
+            playing ? (
+              <Icon name="play" size={26} color="#FFFFFF" />
+            ) :(
+              <Icon name="pause" size={26} color="#FFFFFF" />
+            )
+          }
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={skipForwards}
-      >
-        <Icon name="forward" size={26} color="#FFFFFF" />
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity
+          onPress={skipForwards}
+        >
+          <Icon name="forward" size={26} color="#FFFFFF" />
+        </TouchableOpacity>
+      </View>
+    </>
   )
 };
 
@@ -292,7 +306,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-evenly',
     flex: 3,
-    height: 50
+    height: 50,
   },
   progressBar: {
     flex: 1,
