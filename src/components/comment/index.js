@@ -2,18 +2,18 @@ import { Image, ScrollView, Text, View } from "react-native";
 import { RatingStar } from "../rating-star";
 import { AppInputText } from "../app-inut-text";
 import { COLORS } from "../../constants/colors";
-import { BtnDetails } from "../../screens/MovieDatailScreen";
+import { BtnDetails } from "../../screens/MovieDetailScreen";
 import styles from "./styles";
 import { useEffect, useState } from "react";
 
-const defaultCommnet = {
+const defaultComment = {
   comment: '',
   rating: 0,
 };
 export const Comment = ({data = [], sendComment = () => {}}) => {
     const [currentRating, setCurrentRating] = useState(0);
     const [disabled, setDisabled] = useState(true);
-    const [formValue, setFormValue] = useState(defaultCommnet);
+    const [formValue, setFormValue] = useState(defaultComment);
   
     const totalStar = () => {
       const newArr = data.map(item => item?.rating || 0);
@@ -35,7 +35,7 @@ export const Comment = ({data = [], sendComment = () => {}}) => {
 
     const handleSendMail = () => {
       sendComment(formValue);
-      setFormValue(defaultCommnet);
+      setFormValue(defaultComment);
       setDisabled(true);
     }
   

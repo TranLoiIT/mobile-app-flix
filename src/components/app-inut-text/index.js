@@ -12,6 +12,7 @@ export function AppInputText({
   bgColorInput = COLORS.backgroundInput,
   colorText = COLORS.white,
   secureTextEntry = false,
+  onSubmitEditing = () => {},
 }) {
   return (
     <SafeAreaView>
@@ -25,6 +26,7 @@ export function AppInputText({
         placeholderTextColor={COLORS.white}
         backgroundColor={bgColorInput}
         secureTextEntry={secureTextEntry}
+        onSubmitEditing={onSubmitEditing}
       />
     </SafeAreaView>
   );

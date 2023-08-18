@@ -113,7 +113,6 @@ const RenderPoster = (props) => {
             ? <FlatList
                 data={listFilm}
                 renderItem={({item}) => {
-                  console.log('item', item)
                   return (
                     <TouchableOpacity
                       style={{marginTop: 4}}

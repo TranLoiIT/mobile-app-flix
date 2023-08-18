@@ -1,9 +1,7 @@
 import React from 'react';
 import {Image, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {DetailsScreen} from '../screens/Details';
 import { ProfileScreen } from '../screens/Profile';
-import MovieDatails from '../screens/MovieDatailScreen';
 import { IMAGES } from '../constants/image';
 import { HomeScreen } from '../screens/HomeScreen';
 export const COLORS = {
@@ -13,6 +11,7 @@ export const COLORS = {
 };
 
 import Feather from 'react-native-vector-icons/Feather';
+import { SearchMovieScreen } from '../screens/Search';
 
 const Tab = createBottomTabNavigator();
 
@@ -38,22 +37,13 @@ export function MainBottom() {
       />
       <Tab.Screen
         name="Details"
-        component={DetailsScreen}
+        component={SearchMovieScreen}
         options={{
           tabBarIcon: ({color, size}) => (
             <Image source={IMAGES.SEARCH} style={[styles.image, { tintColor: color }]} />
           ),
         }}
       />
-      {/* <Tab.Screen
-        name="Video"
-        component={MovieDatails}
-        options={{
-          tabBarIcon: ({color, size}) => (
-            <Image source={IMAGES.FILM} style={[styles.image, { tintColor: color }]} />
-          ),
-        }}
-      /> */}
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}

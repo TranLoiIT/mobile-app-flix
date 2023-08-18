@@ -12,9 +12,8 @@ import { logoutUser } from '../api/auth';
 export function ProfileScreen() {
   const auth = useSelector(state => state.auth);
   const dispatch = useDispatch();
-  const navigation = useNavigation();
 
-  const hanldeLogout = async () => {
+  const handleLogout = async () => {
     try {
       const data = await logoutUser();
       if (data) {
@@ -24,10 +23,6 @@ export function ProfileScreen() {
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const onPress = () => {
-    navigation.navigate(ROUTER.REGISTER);
   };
 
   return (
@@ -52,12 +47,8 @@ export function ProfileScreen() {
           </Text>
         </View>
         <View style={{marginTop: 84}}>
-          <AppButton label="Logout" onPress={() => hanldeLogout()} />
+          <AppButton label="Logout" onPress={() => handleLogout()} />
         </View>
-        <Pressable onPress={onPress} style={{marginTop: 42}}>
-          <Text style={[styles.register]}>{TEXT.REGISTER}?</Text>
-        </Pressable>
-        
       </View>
     </ViewContainer>
   );
