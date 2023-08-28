@@ -1,43 +1,53 @@
-import {FlatList, Keyboard, Pressable, StyleSheet, Text, View} from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, View} from 'react-native';
 import { ViewContainer } from '../components/ViewContainer';
 import { AppInputText } from '../components/app-inut-text';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { COLORS } from '../constants/colors';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { EpisodeItem } from './MovieDetailScreen';
 import { Loading } from '../components/app-loadding';
+import { searchFilm } from '../api/films';
+import { useNavigation } from '@react-navigation/native';
+import { ROUTER } from '../constants/key';
 
 export function SearchMovieScreen() {
   const [valueSearch, setValueSearch] = useState('');
   const [listMovie, setListMovie] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const navigation = useNavigation();
+
   const getDataSearch = async () => {
-    console.log('11111', 11111)
-    try {
-      setLoading(true);
-      // const res = await 
-      // if (res) {
-      //   setListMovie(res);
-      // }
-      Keyboard.dismiss();
-    } catch (error) {
-      console.log('error', error)
-    } finally {
-      setLoading(false);
+    Keyboard.dismiss();
+    if (valueSearch != '') {
+      try {
+        setLoading(true);
+        const res = await searchFilm(valueSearch)
+        if (res) {
+          setListMovie(res);
+        }
+      } catch (error) {
+        console.log('error', error)
+      } finally {
+        setLoading(false);
+      }
     }
+  }
+
+  const handleSelectMovie = (item) => {
+    navigation.navigate(ROUTER.MOVIE_DETAIL, { slug: item?.slug || '' });
   }
 
   return (
     <ViewContainer>
-      <Text style={{fontSize: 24, color: 'red'}}>Tìm kiếm phim</Text>
+      <Text style={{fontSize: 24, color: 'red', padding: 12}}>Tìm kiếm phim</Text>
       <View style={{flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', padding: 12}}>
         <View style={{width: '80%'}}>
           <AppInputText
             value={valueSearch}
             maxLength={255}
             placeholder='Tìm kiếm phim'
-            onChange={(e) => setValueSearch(e)}
+            onChange={(e) => setValueSearch(e.trim())}
             onSubmitEditing={getDataSearch}
           />
         </View>
@@ -51,19 +61,21 @@ export function SearchMovieScreen() {
       </View>
 
       {/* list item movie search */}
-      {
-        listMovie.length > 0 ? (listMovie || []).map(
-          (item, idx) => <EpisodeItem
-            key={idx}
-            episode={item}
-            onPress={(item) => handleSelectMovie(item)}
-          />
-        ) : (
-          <Text style={{fontSize: 16, color: COLORS.white, marginTop: 24, textAlign: 'center'}}>
-            Không có kết quả tìm kiếm!
-          </Text>
-        )
-      }
+      <View style={{paddingLeft: 12, paddingRight: 12}}>
+        {
+          listMovie.length > 0 ? (listMovie || []).map(
+            (item, idx) => <EpisodeItem
+              key={idx}
+              episode={item}
+              onPress={(item) => handleSelectMovie(item)}
+            />
+          ) : (
+            <Text style={{fontSize: 16, color: COLORS.white, marginTop: 24, textAlign: 'center'}}>
+              Không có kết quả tìm kiếm!
+            </Text>
+          )
+        }
+      </View>
       {
         loading && <Loading />
       }

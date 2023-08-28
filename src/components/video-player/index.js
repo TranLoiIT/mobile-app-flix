@@ -27,6 +27,7 @@ const VideoPlayer = ({uri = URL_VIDEO, poster = ''}) => {
   const navigation = useNavigation();
   
   useEffect(() => {
+    console.log('Orientation', Orientation)
     const lockOrientation = () => {
       if (orientation === 'landscape') {
         Orientation.lockToLandscape();
@@ -39,7 +40,7 @@ const VideoPlayer = ({uri = URL_VIDEO, poster = ''}) => {
 
     return () => {
       Orientation.unlockAllOrientations();
-      setIsShowPoster(true);
+      // setIsShowPoster(true);
     };
   }, [orientation]);
   
@@ -111,7 +112,12 @@ const VideoPlayer = ({uri = URL_VIDEO, poster = ''}) => {
   }
 
   const handleBack = () => {
-    navigation.goBack()
+    if (fullScreen) {
+      setFullScreen(false);
+      setOrientation('portrait');
+    } else {
+      navigation.goBack();
+    }
   }
 
   return (

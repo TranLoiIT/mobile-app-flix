@@ -5,7 +5,7 @@ import { Loading } from '../../components/app-loadding';
 import { FlatList, Image, Text, View, TouchableOpacity } from 'react-native';
 import styles from './styles';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { BtnDetails } from '../MovieDatailScreen';
+import { BtnDetails } from '../MovieDetailScreen';
 import { ROUTER } from '../../constants/key';
 import { getCategory, getListFilms } from '../../api/category';
 import { URL_IMAGE } from '../../api/config';

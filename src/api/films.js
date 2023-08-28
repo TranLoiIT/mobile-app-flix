@@ -13,6 +13,11 @@ export const getFilms = async () => {
 export const reviewsFilm = async (id, payload) => {
     const res = await apiClient.patch(`films/${id}`, payload, {
         withCredentials: true,
-      });
+    });
+    return res;
+}
+
+export const searchFilm = async (payload) => {
+    const res = await apiClient.get(`films/filter?q=${payload}`);
     return res;
 }
